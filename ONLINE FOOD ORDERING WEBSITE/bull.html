@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Final Bill</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      justify-content: space-between;
+    }
+
+    .bill-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 15px;
+    }
+
+    .item-info {
+      font-size: 18px;
+      color: #444;
+      flex-grow: 1;
+    }
+
+    .cancel-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .cancel-btn:hover {
+      background-color: darkred;
+    }
+
+    .total {
+      font-size: 22px;
+      text-align: right;
+      margin-top: 20px;
+      color: #28a745;
+    }
+
+    .thank-you {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 20px;
+      color: #555;
+    }
+
+    .center-btn {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pay-button {
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .pay-button:disabled {
+      background-color: #888;
+      cursor: not-allowed;
+    }
+
+    .no-items {
+      text-align: center;
+      font-size: 18px;
+      color: #999;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Your Final Bill</h2>
+    <ul id="billItems"></ul>
+    <div id="noItemsMsg" class="no-items" style="display: none;">No items added to the cart yet.</div>
+    <div class="total">Total: ₹<span id="finalTotal">0.00</span></div>
+    <div class="thank-you">Thank you for ordering with Foodie Express! 🍽️</div>
+
+    <div class="center-btn">
+      <button id="payBtn" onclick="payNow()" class="pay-button">Pay Now</button>
+    </div>
+    
+
+    <div id="statusMessage" class="thank-you" style="margin-top: 25px;"></div>
+  </div><div class="center-btn">
+    <button onclick="location.href='northindian.html'" class="pay-button" style="background-color: #be1212; margin-top: 10px;">
+      ⬅️ Back to Order
+    </button>
+  </div>
+  
+
+  <script>
+    const billList = document.getElementById("billItems");
+    const finalTotal = document.getElementById("finalTotal");
+    const statusDiv = document.getElementById("statusMessage");
+    const payBtn = document.getElementById("payBtn");
+    const noItemsMsg = document.getElementById("noItemsMsg");
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let total = 0;
+
+    function updateTotal() {
+      finalTotal.textContent = total.toFixed(2);
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      location.reload(); // Refresh to update UI
+    }
+
+    if (cart.length === 0) {
+      noItemsMsg.style.display = "block";
+      payBtn.disabled = true;
+      payBtn.textContent = "No Items to Pay";
+    } else {
+      cart.forEach((item, index) => {
+        const li = document.createElement("li");
+
+        const img = document.createElement("img");
+        img.src = item.image || "default.jpg";
+        img.className = "bill-img";
+
+        const text = document.createElement("div");
+        text.className = "item-info";
+        text.textContent = `${item.name} - ₹${item.price}`;
+
+        const cancelButton = document.createElement("button");
+        cancelButton.className = "cancel-btn";
+        cancelButton.textContent = "X";
+        cancelButton.onclick = () => removeItem(index);
+
+        li.appendChild(img);
+        li.appendChild(text);
+        li.appendChild(cancelButton);
+
+        billList.appendChild(li);
+
+        total += parseFloat(item.price);
+      });
+    }
+
+    updateTotal();
+
+    function payNow() {
+      payBtn.disabled = true;
+      payBtn.textContent = "Processing...";
+      statusDiv.textContent = "🔄 Checking your bank balance...";
+
+      setTimeout(() => {
+        statusDiv.textContent = "✅ Payment Successful! Thank you for ordering.";
+        payBtn.style.display = "none";
+        localStorage.removeItem("cart"); // Clear cart after payment
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

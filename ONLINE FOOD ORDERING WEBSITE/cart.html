@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+      position: relative; /* Necessary for absolute positioning */
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    #cartItems {
+      list-style-type: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    #cartItems li {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: space-between;
+    }
+
+    .cart-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    h3 {
+      text-align: center;
+      color: #444;
+      margin-top: 30px;
+      font-size: 24px;
+    }
+
+    #totalPrice {
+      color: #28a745;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .cancel-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .cancel-btn:hover {
+      background-color: darkred;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 30px; /* Rounded button */
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Stylish shadow */
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .back-btn:hover {
+      background-color: #0056b3;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goBack()">Back to Order</button>
+  <div class="container">
+    <h2>Your Cart</h2>
+    <ul id="cartItems"></ul>
+    <h3>Total: ₹<span id="totalPrice">0</span></h3>
+    <button onclick="goToBill()" style="padding: 10px 20px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">Pay Now</button>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartItemsContainer = document.getElementById("cartItems");
+    const totalPriceSpan = document.getElementById("totalPrice");
+
+    let total = 0;
+
+    // Function to go back to the order page
+    function goBack() {
+      window.location.href = "northindian.html"; // Make sure the order page is named "order.html"
+    }
+
+    // Function to remove an item from the cart
+    function removeItem(button, itemPrice, itemName) {
+      // Remove the item from the DOM
+      const li = button.parentElement;
+      li.remove();
+
+      // Update the total price
+      total -= itemPrice;
+      totalPriceSpan.textContent = total.toFixed(2);
+
+      // Remove the item from the cart in localStorage
+      const updatedCart = cart.filter(item => item.name !== itemName);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    }
+
+    // Render cart items
+    cart.forEach(item => {
+      const li = document.createElement("li");
+
+      const img = document.createElement("img");
+      img.src = item.image || "default.jpg";
+      img.alt = item.name;
+      img.className = "cart-img";
+
+      const text = document.createElement("span");
+      text.textContent = `${item.name} - ₹${item.price}`;
+
+      const cancelButton = document.createElement("button");
+      cancelButton.className = "cancel-btn";
+      cancelButton.textContent = "X";
+      cancelButton.onclick = () => removeItem(cancelButton, item.price, item.name);
+
+      li.appendChild(img);
+      li.appendChild(text);
+      li.appendChild(cancelButton);
+      cartItemsContainer.appendChild(li);
+
+      total += item.price;
+    });
+
+    totalPriceSpan.textContent = total.toFixed(2);
+
+    // Redirect to bill page
+    function goToBill() {
+        window.location.href = "bull.html";
+    }
+  </script>
+</body>
+</html>
